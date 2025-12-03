@@ -22,3 +22,95 @@ After configuring conda mirror sources, always configure pip mirror sources by e
 python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --upgrade pip
 pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 ```
+
+## POST EXECUTION SCRIPT COMMANDS
+
+If you want to manually execute the commands in `.devcontainer/post_exec.sh`, follow these steps in order:
+
+### Execution Order
+
+1.  **Check if the directory exists:**
+
+```bash
+# Check if the /workspace/Splat-SLAM directory exists.
+# If it does not exist, continue with the subsequent steps.
+```
+
+2.  **Switch to the working directory:**
+
+```bash
+cd /workspace
+```
+
+3.  **Clone the repository (including submodules):**
+
+```bash
+git clone --recursive https://github.com/iis-esslingen/Splat-SLAM.git
+```
+
+4.  **Navigate to the project directory:**
+
+```bash
+cd /workspace/Splat-SLAM
+```
+
+5.  **Modify the source code file:**
+
+```bash
+sed -i 's/p_view\.z <= 0\.2f/p_view\.z <= 0\.001f/' /workspace/Splat-SLAM/thirdparty/diff-gaussian-rasterization-w-pose/cuda_rasterizer/auxiliary.h
+```
+
+6.  **Install dependencies (in order):**
+
+```bash
+# Install third-party libraries (editable mode)
+pip install --no-cache-dir -e thirdparty/lietorch/
+pip install --no-cache-dir -e thirdparty/diff-gaussian-rasterization-w-pose/
+pip install --no-cache-dir -e thirdparty/simple-knn/
+pip install --no-cache-dir -e thirdparty/evaluate_3d_reconstruction_lib/
+
+# Install the main project (editable mode)
+pip install --no-cache-dir -e .
+
+# Install dependencies from requirements.txt
+pip install --no-cache-dir -r requirements.txt
+
+# Install pytorch-lightning (without dependencies)
+pip install --no-cache-dir pytorch-lightning==1.9 --no-deps
+
+# Install gdown
+pip install --no-cache-dir gdown
+```
+
+7.  **Download the pre-trained model:**
+
+```bash
+# Install gdown again (to ensure it is installed)
+pip install gdown
+
+# Download the pre-trained model
+gdown "https://drive.google.com/uc?id=1oZbVPrubtaIUjRRuT8F-YjjHBW-1spKT" -O glorie-pretrained.zip
+```
+
+8.  **Extract the pre-trained model:**
+
+```bash
+unzip glorie-pretrained.zip -d pretrained
+```
+
+### Important Notes
+
+1.  **Paths:** The script uses `/workspace`. On Windows, you might need to change this to the corresponding path (e.g., `E:\Desktop\rec_records\nerf-3dgs-benchmark\Splat-SLAM`).
+2.  **Environment:** It is recommended to execute these commands in Linux or WSL, or within a Docker container.
+3.  **Conditional Execution:** The above steps are executed only if `/workspace/Splat-SLAM` does not already exist.
+4.  **Error Handling:** The script uses `set -eux`, which will cause it to exit immediately upon encountering an error. When executing manually, pay attention to the result of each step.
+
+In Windows PowerShell, the `sed` command may not be available. In this case:
+
+*   Use WSL
+*   Install Git Bash
+*   Manually edit the `auxiliary.h` file and replace `p_view.z <= 0.2f` with `p_view.z <= 0.001f`.
+
+### Conda Environment
+
+The `post_exec.sh` script does not contain commands for creating a conda environment. It is assumed that the conda environment is set up prior to running the script, likely during the Docker container build process.

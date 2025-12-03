@@ -1,0 +1,20 @@
+
+## HEADERS
+
+## TECH STACK
+
+## PROJECT DOCUMENTATION & CONTEXT SYSTEM
+
+## CODING STANDARDS
+
+## WORKFLOW & RELEASE RULES
+
+## DEBUGGING
+
+## CONDA AND PIP MIRROR SETTINGS
+After configuring conda mirror sources, always configure pip mirror sources by executing the following commands:
+
+```bash
+python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --upgrade pip
+pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+```
