@@ -76,8 +76,7 @@ pip install --no-cache-dir -e thirdparty/lietorch/ \
 Check installation：
 
 ```bash
-python -c "import torch; import lietorch; import simple_knn; import
-diff_gaussian_rasterization; print(torch.cuda.is_available())"
+python -c "import torch; import lietorch; import simple_knn; import diff_gaussian_rasterization; print(torch.cuda.is_available())"
 ```
 
 

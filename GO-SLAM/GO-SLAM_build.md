@@ -28,12 +28,12 @@ DISPLAY_EXPORT="export DISPLAY=:0"
 
 
 
-**conda环境构建**：
+**conda环境构建**：mamba解析过慢，当前计划使用
 
 ```bash
-cd cd /workspace/GO-SLAM
-mamba env create -f environment.yaml -y
-mamba activate go-slam
+cd /workspace/GO-SLAM && \
+    mamba env create -f environment.yaml -y && \
+    mamba activate go-slam
 ```
 
 
