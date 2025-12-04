@@ -46,6 +46,10 @@ RUN conda config --add channels defaults && \
 # Configure pip to use Tsinghua mirror
 RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 
+# Install mamba and initialize it as the primary conda command
+RUN conda install mamba -n base -c conda-forge -y && \
+    mamba shell init --shell bash
+
 # Clone DROID-SLAM repository and set up the environment
 WORKDIR /workspace
 # RUN mkdir -p /workspace/GlORIE-SLAM && \

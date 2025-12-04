@@ -28,7 +28,7 @@ DISPLAY_EXPORT="export DISPLAY=:0"
 
 
 
-**conda环境构建**：mamba解析过慢，当前计划使用
+**conda环境构建**：
 
 ```bash
 cd /workspace/GlORIE-SLAM && \
@@ -56,15 +56,54 @@ cd /workspace/GlORIE-SLAM/thirdparty && mamba activate glorie-slam
 
 
 ```bash
-git clone --branch v0.16.0 https://github.com/isl-org/Open3D.git
+git clone --recursive https://github.com/isl-org/Open3D.git
 cd Open3D
+git checkout v0.16.0
+git status
+git describe --tags
 mkdir build && cd build
 ```
 
 
 
-```bash
+编译：
 
+```bash
+PYTHON_EXEC=$(which python)
+
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_SHARED_LIBS=ON \
+  -DENABLE_HEADLESS_RENDERING=ON \
+  -DBUILD_GUI=OFF \
+  -DUSE_SYSTEM_GLEW=OFF \
+  -DUSE_SYSTEM_GLFW=OFF \
+  -DBUILD_WEBRTC=OFF \
+  -DBUILD_EXAMPLES=OFF \
+  -DBUILD_TESTS=OFF \
+  -DBUILD_PYTHON_MODULE=ON \
+  -DPYTHON_EXECUTABLE=${PYTHON_EXEC}
+```
+
+
+
+安装：
+
+```bash
+# 仍在 Open3D/build 目录
+make -j$(nproc)
+
+# 回到 Open3D 根目录，安装 Python 包到当前环境
+cd ..
+python -m pip install .
+```
+
+
+
+测试：
+
+```bash
+python -c "import open3d as o3d; print(o3d.__version__)"
 ```
 
 
