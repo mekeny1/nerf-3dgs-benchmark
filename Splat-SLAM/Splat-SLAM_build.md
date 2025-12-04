@@ -8,21 +8,21 @@
 
 （forked，下载到本地，更新后push，服务器再pull进行更新）`nerf-3dgs-benchmark\Splat-SLAM\.devcontainer`：修改部分配置
 
-将所需下载资源提前下载到本地，并通过 **WinSCP** 软件链接到服务器，放于 `nerf-3dgs-benchmark\Splat-SLAM`（容器目录 **/workspace** 对应到服务器中的目录）
+将所需下载资源提前下载到本地，并通过 **WinSCP** 软件链接到服务器，放于 `nerf-3dgs-benchmark\Splat-SLAM`（容器目录 **/workspace** 对应到服务器中的目录）：
+
+```bash
+https://drive.google.com/uc?id=1oZbVPrubtaIUjRRuT8F-YjjHBW-1spKT
+```
 
 **clone**（服务器，容器的话是root权限）：
 
 ```bash
-git clone --recursive https://github.com/google-research/Splat-SLAM.git
+git clone --recursive https://github.com/iis-esslingen/Splat-SLAM.git
 ```
 
 
 
 **vsc+docker插件**：工作空间中build docker
-
-#### 预处理
-
-
 
 #### Splat-SLAM构建
 
@@ -69,6 +69,15 @@ pip install --no-cache-dir -e thirdparty/lietorch/ \
     pip install --no-cache-dir -e . && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir pytorch-lightning==1.9 --no-deps
+```
+
+
+
+Check installation：
+
+```bash
+python -c "import torch; import lietorch; import simple_knn; import
+diff_gaussian_rasterization; print(torch.cuda.is_available())"
 ```
 
 
