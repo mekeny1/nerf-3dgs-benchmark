@@ -137,3 +137,19 @@ echo "TORCH_CUDA_ARCH_LIST is set to: $TORCH_CUDA_ARCH_LIST"
 # Install PyTorch
 pip install --no-cache-dir torch torchvision torchaudio
 ```
+
+### Manual Execution Prerequisites
+
+When manually executing the commands from `.devcontainer/post_exec.sh`, ensure the following prerequisites are met before starting:
+
+1.  **Environment Variables:** Manually set the necessary environment variables defined in the Dockerfile (e.g., `CUDA_HOME`, `TORCH_CUDA_ARCH_LIST`). These variables might not be automatically inherited when running the script outside the Docker environment.
+
+2.  **Python Environment:** Verify that you are using the correct Python environment, especially if the Docker image relies on a conda environment. Activate the appropriate environment before running the commands.
+
+3.  **Repository Cloning:** Ensure that the Splat-SLAM repository has been cloned recursively into the `/workspace` directory before running the script. This includes any necessary submodules.
+
+4.  **Dependencies:** Ensure all build tools (like `cmake`) and libraries are installed. The Dockerfile provides a good reference.
+
+5.  **Network Access:** Ensure you have network access to download the pre-trained model and other dependencies.
+
+6.  **Paths:** The script assumes a working directory of `/workspace`. Adjust paths accordingly if executing from a different location.

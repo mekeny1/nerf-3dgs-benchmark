@@ -53,13 +53,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda
-ENV CONDA_DIR=/opt/conda
+ENV CONDA_DIR="/opt/conda"
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
     /bin/bash /tmp/miniconda.sh -b -p /opt/conda && \
     rm /tmp/miniconda.sh
 
 # Put conda in PATH so we can use conda activate
-ENV PATH=$CONDA_DIR/bin:$PATH
+ENV PATH="$CONDA_DIR/bin:$PATH"
 
 # Initialize conda
 RUN conda init bash
@@ -77,7 +77,8 @@ RUN conda config --add channels defaults && \
     conda config --set custom_channels.auto https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
 
 # Configure pip to use Tsinghua mirror
-RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --upgrade pip && \
+RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple \
+        "pip==23.2.1" "setuptools<70" && \
     pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 
 # Install mamba and initialize it as the primary conda command

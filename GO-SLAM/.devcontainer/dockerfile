@@ -19,23 +19,43 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Install miniconda
-ENV CONDA_DIR /opt/conda
+ENV CONDA_DIR="/opt/conda"
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
     /bin/bash /tmp/miniconda.sh -b -p /opt/conda && \
     rm /tmp/miniconda.sh
 
 # Put conda in path so we can use conda activate
-ENV PATH=$CONDA_DIR/bin:$PATH
+ENV PATH="$CONDA_DIR/bin:$PATH"
 
 # Initialize conda
 RUN conda init bash
 
-# Clone DROID-SLAM repository and set up the environment
+RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
+# Configure conda to use Tsinghua mirror
+RUN conda config --add channels defaults && \
+    conda config --set show_channel_urls true && \
+    conda config --add default_channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main && \
+    conda config --add default_channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r && \
+    conda config --add default_channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2 && \
+    conda config --set custom_channels.conda-forge https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud && \
+    conda config --set custom_channels.pytorch https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud && \
+    conda config --set custom_channels.auto https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+
+# Configure pip to use Tsinghua mirror
+RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple \
+        "pip==23.2.1" "setuptools<70" && \
+    pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+
+# Install mamba and initialize it as the primary conda command
+RUN conda install mamba -n base -c conda-forge -y && \
+    mamba shell init --shell bash
+
 WORKDIR /workspace
-RUN mkdir -p /workspace/GO-SLAM && \
-    git clone https://github.com/iis-esslingen/GO-SLAM.git /workspace/GO-SLAM && \
-    cd /workspace/GO-SLAM && \
-    conda env create -f environment.yaml
+# RUN mkdir -p /workspace/GO-SLAM && \
+#     git clone https://github.com/iis-esslingen/GO-SLAM.git /workspace/GO-SLAM && \
+#     cd /workspace/GO-SLAM && \
+#     conda env create -f environment.yaml
 
 # Activate conda everytime, when (re)opening bash terminal
-RUN echo ". activate go-slam" > ~/.bashrc
+RUN echo "mamba activate go-slam" >> ~/.bashrc

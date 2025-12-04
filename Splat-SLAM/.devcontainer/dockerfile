@@ -2,8 +2,8 @@ FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel
 
 # Set arguments and environment variables
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Berlin
-ENV CUDA_HOME=/usr/local/cuda
+ENV TZ="Europe/Berlin"
+ENV CUDA_HOME="/usr/local/cuda"
 ENV TORCH_CUDA_ARCH_LIST="8.0+PTX" 
 
 # Install essential tools
@@ -20,7 +20,8 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Configure pip to use Tsinghua mirror
-RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --upgrade pip && \
+RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple \
+        "pip==23.2.1" "setuptools<70" && \
     pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 
 CMD ["bash"]

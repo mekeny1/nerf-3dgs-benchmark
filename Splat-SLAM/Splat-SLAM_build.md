@@ -4,7 +4,13 @@
 
 ### 基础
 
-需要在构建容器前clone到nerf-3dgs-benchmark的Splat-SLAM目录下
+#### docker build
+
+（forked，下载到本地，更新后push，服务器再pull进行更新）`nerf-3dgs-benchmark\Splat-SLAM\.devcontainer`：修改部分配置
+
+将所需下载资源提前下载到本地，并通过 **WinSCP** 软件链接到服务器，放于 `nerf-3dgs-benchmark\Splat-SLAM`（容器目录 **/workspace** 对应到服务器中的目录）
+
+**clone**（服务器，容器的话是root权限）：
 
 ```bash
 git clone --recursive https://github.com/google-research/Splat-SLAM.git
@@ -12,17 +18,24 @@ git clone --recursive https://github.com/google-research/Splat-SLAM.git
 
 
 
-### 容器创建后
+**vsc+docker插件**：工作空间中build docker
 
-**创建conda环境**：不需要，官方甚至没有用到conda命令，用系统自带的Python即可
+#### 预处理
+
+
+
+#### Splat-SLAM构建
+
+**创建 conda 环境**：该镜像自带conda，使用base环境即可，激活：
 
 ```bash
-export DISPLAY_EXPORT="export DISPLAY=:0"
+conda init bash
 ```
 
 
 
 ```bash
+DISPLAY_EXPORT="export DISPLAY=:0"
 cd /workspace/Splat-SLAM
 ```
 
@@ -36,32 +49,30 @@ sed -i 's/p_view\.z <= 0\.2f/p_view\.z <= 0\.001f/' /workspace/Splat-SLAM/thirdp
 
 
 
+**安装额外依赖**：
+
+此处有个点需要注意，就是pip的构建：
+>有 `pyproject.toml`：肯定 PEP 517 + build isolation
+>
+>只有 `setup.py`：
+>
+>- 老 pip：legacy build，不隔离，直接跑 `python setup.py ...`
+>- 新 pip：经常强行套一层 PEP 517，走 `setuptools.build_meta` + build isolation
+
+所以 `setup.py` 的最好使用旧版本pip，如"pip==23.2.1" "setuptools<70"
+
 ```bash
-ARG DEBIAN_FRONTEND=noninteractive
-export TZ="Europe/Berlin"
-export CUDA_HOME="/usr/local/cuda"
-export TORCH_CUDA_ARCH_LIST="8.0+PTX" 
+pip install --no-cache-dir -e thirdparty/lietorch/ \
+                              thirdparty/diff-gaussian-rasterization-w-pose/ \
+                              thirdparty/simple-knn/ \
+                              thirdparty/evaluate_3d_reconstruction_lib/ && \
+    pip install --no-cache-dir -e . && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir pytorch-lightning==1.9 --no-deps
 ```
 
 
 
-**按照额外依赖**：不要使用`--no-cache-dir`，构建时使用隔离构建环境，该环境中没有 torch
+### issues
 
-```bash
-# 安装第三方库（可编辑模式）
-pip install --no-build-isolation -e thirdparty/lietorch/
-pip install --no-build-isolation -e thirdparty/diff-gaussian-rasterization-w-pose/
-pip install --no-build-isolation -e thirdparty/simple-knn/
-pip install --no-build-isolation -e thirdparty/evaluate_3d_reconstruction_lib/
-
-# 安装主项目（可编辑模式）
-pip install --no-build-isolation -e .
-
-# 安装 requirements.txt 中的依赖
-pip install --no-build-isolation -r requirements.txt
-
-# 安装 pytorch-lightning（不安装依赖）
-pip install --no-build-isolation pytorch-lightning==1.9 --no-deps
-```
-
-
+### custom datasets
