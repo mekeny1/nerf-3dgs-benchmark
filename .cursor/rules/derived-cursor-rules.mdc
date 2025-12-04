@@ -114,3 +114,26 @@ In Windows PowerShell, the `sed` command may not be available. In this case:
 ### Conda Environment
 
 The `post_exec.sh` script does not contain commands for creating a conda environment. It is assumed that the conda environment is set up prior to running the script, likely during the Docker container build process.
+
+**Troubleshooting `ModuleNotFoundError: No module named 'torch'` in `post_exec.sh`**
+
+If you encounter the error `ModuleNotFoundError: No module named 'torch'` when executing `pip install --no-cache-dir -e thirdparty/lietorch/` within the `post_exec.sh` script, ensure that the PyTorch environment is properly activated and that PyTorch is installed *before* attempting to install `lietorch`. The most common cause is that the conda environment was not activated, or that pytorch was not installed into the environment.
+
+Add the following commands *before* installing `lietorch` to ensure `torch` is available. Also, ensure that runtime environment variables are correctly set, such as `CUDA_HOME` and `TORCH_CUDA_ARCH_LIST`:
+
+```bash
+# Ensure the correct conda environment is activated (if applicable)
+# Replace 'your_env_name' with the actual environment name
+conda activate your_env_name
+
+# Verify CUDA_HOME is set (example, adjust to your actual CUDA path)
+export CUDA_HOME=/usr/local/cuda
+echo "CUDA_HOME is set to: $CUDA_HOME"
+
+# Verify TORCH_CUDA_ARCH_LIST is set
+export TORCH_CUDA_ARCH_LIST="8.0+PTX"
+echo "TORCH_CUDA_ARCH_LIST is set to: $TORCH_CUDA_ARCH_LIST"
+
+# Install PyTorch
+pip install --no-cache-dir torch torchvision torchaudio
+```
