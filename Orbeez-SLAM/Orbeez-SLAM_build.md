@@ -20,6 +20,21 @@ git clone --recursive https://github.com/iis-esslingen/Orbeez-SLAM.git
 
 **vsc+docker插件**：工作空间中build docker
 
+
+
+```bash
+ssh -R 17890:127.0.0.1:7897 ubuntu@117.50.33.109
+```
+
+
+
+```bash
+export http_proxy=http://127.0.0.1:17890 && \
+    export https_proxy=http://127.0.0.1:17890
+```
+
+
+
 #### Orbeez-SLAM构建
 
 

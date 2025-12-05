@@ -4,6 +4,9 @@ WORKDIR /root
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ="Etc/UTC"
 
+RUN export http_proxy=http://127.0.0.1:17890 && \
+        export https_proxy=http://127.0.0.1:17890
+
 RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
