@@ -43,9 +43,7 @@ RUN conda config --add channels defaults && \
     conda config --set custom_channels.auto https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
 
 # Configure pip to use Tsinghua mirror
-RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple \
-        "pip==23.2.1" "setuptools<70" && \
-    pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 
 # Install mamba and initialize it as the primary conda command
 RUN conda install mamba -n base -c conda-forge -y && \

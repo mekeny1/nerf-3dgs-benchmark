@@ -18,6 +18,18 @@ git clone --recursive https://github.com/iis-esslingen/GlORIE-SLAM.git
 
 
 
+**open3d0.16.0**：clone一定不能加 ` --recursive`
+
+```bash
+cd /workspace/GlORIE-SLAM/thirdparty
+git clone https://github.com/isl-org/Open3D.git
+cd Open3D
+git checkout v0.16.0
+git submodule update --init --recursive
+```
+
+
+
 **vsc+docker插件**：工作空间中build docker
 
 #### GO-GlORIE-SLAM构建
@@ -41,27 +53,31 @@ cd /workspace/GlORIE-SLAM && \
 **额外依赖安装**：
 
 ```bash
-pip install thirdparty/evaluate_3d_reconstruction_lib
-python setup.py install
+pip install thirdparty/evaluate_3d_reconstruction_lib && \
+    python setup.py install
 ```
 
 
 
 #### 编译open3d
 
+补充依赖：
+
 ```bash
-cd /workspace/GlORIE-SLAM/thirdparty && mamba activate glorie-slam
+sudo apt-get install -y libosmesa6-dev
 ```
 
 
 
 ```bash
-git clone --recursive https://github.com/isl-org/Open3D.git
-cd Open3D
-git checkout v0.16.0
-git status
-git describe --tags
-mkdir build && cd build
+cd /workspace/GlORIE-SLAM/thirdparty
+```
+
+
+
+```bash
+cd /workspace/GlORIE-SLAM/thirdparty/Open3D && \
+    mkdir build && cd build
 ```
 
 
@@ -69,8 +85,6 @@ mkdir build && cd build
 编译：
 
 ```bash
-PYTHON_EXEC=$(which python)
-
 cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_SHARED_LIBS=ON \
@@ -82,20 +96,13 @@ cmake .. \
   -DBUILD_EXAMPLES=OFF \
   -DBUILD_TESTS=OFF \
   -DBUILD_PYTHON_MODULE=ON \
-  -DPYTHON_EXECUTABLE=${PYTHON_EXEC}
-```
+  -DBUILD_CUDA_MODULE=OFF \
+  -DPYTHON_EXECUTABLE=$(which python)
 
 
-
-安装：
-
-```bash
-# 仍在 Open3D/build 目录
-make -j$(nproc)
-
-# 回到 Open3D 根目录，安装 Python 包到当前环境
-cd ..
-python -m pip install .
+make -j$(nproc) pip-package
+cd lib/python_package/pip_package
+pip install open3d-*.whl
 ```
 
 
