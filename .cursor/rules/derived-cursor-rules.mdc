@@ -158,11 +158,28 @@ When manually executing the commands from `.devcontainer/post_exec.sh`, ensure t
 
 When defining environment variables in a Dockerfile, especially for proxy settings (`http_proxy`, `https_proxy`), ensure they are defined using the `ENV` instruction rather than `export` within a `RUN` instruction. The `ENV` instruction persists variables across layers, whereas `export` only applies within the scope of a single `RUN` instruction. This ensures that subsequent commands, such as `apt-get update`, can access the proxy settings.
 
+**`ENV` vs `ARG` for Proxy Settings in Dockerfiles:**
+
+*   `ENV`:  Using `ENV` to define proxy settings (e.g., `http_proxy`, `https_proxy`) makes them available during both the Docker image build and runtime. This is suitable if the application running inside the container also requires the proxy.
+
+*   `ARG`: Using `ARG` defines build-time variables.  If you only need the proxy during the build process (e.g., to download packages), you can use `ARG` and then set `ENV` variables based on the `ARG` values. This prevents the proxy settings from being included in the final image unless explicitly needed at runtime.  To use `ARG` and have the proxy available to `apt-get update` you must also define the `ENV` variables in the Dockerfile.
+
 Example:
 
 ```dockerfile
 ENV http_proxy=http://your-proxy-server:port
 ENV https_proxy=https://your-proxy-server:port
+
+RUN apt-get update
+```
+
+Alternatively, for build-time only proxy:
+
+```dockerfile
+ARG http_proxy=http://your-proxy-server:port
+ARG https_proxy=https://your-proxy-server:port
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${https_proxy}
 
 RUN apt-get update
 ```
