@@ -7,7 +7,7 @@
         "-c",
         ".devcontainer/initialize_command"
     ],
-    // "postCreateCommand": "bash -i .devcontainer/post_exec.sh",
+    "postCreateCommand": "bash -i .devcontainer/post_exec.sh",
     "workspaceFolder": "/workspace",
     "runArgs": ["--gpus=all"]
 }

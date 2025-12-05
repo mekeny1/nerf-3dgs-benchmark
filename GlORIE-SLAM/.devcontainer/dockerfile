@@ -33,19 +33,6 @@ RUN conda init bash
 
 RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
-# Configure conda to use Tsinghua mirror
-RUN conda config --add channels defaults && \
-    conda config --set show_channel_urls true && \
-    conda config --add default_channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main && \
-    conda config --add default_channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r && \
-    conda config --add default_channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2 && \
-    conda config --set custom_channels.conda-forge https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud && \
-    conda config --set custom_channels.pytorch https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud && \
-    conda config --set custom_channels.auto https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-
-# Configure pip to use Tsinghua mirror
-RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
-
 # Install mamba and initialize it as the primary conda command
 RUN conda install mamba -n base -c conda-forge -y && \
     mamba shell init --shell bash

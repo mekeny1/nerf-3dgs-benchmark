@@ -18,14 +18,14 @@ git clone --recursive https://github.com/iis-esslingen/GlORIE-SLAM.git
 
 
 
-**open3d0.16.0**：clone一定不能加 ` --recursive`
+**open3d0.16.0**：clone时一定不能加 `--recursive`
 
 ```bash
-cd /workspace/GlORIE-SLAM/thirdparty
-git clone https://github.com/isl-org/Open3D.git
-cd Open3D
-git checkout v0.16.0
-git submodule update --init --recursive
+cd /workspace/GlORIE-SLAM/thirdparty && \
+    git clone https://github.com/isl-org/Open3D.git && \
+    cd Open3D && \
+    git checkout v0.16.0 && \
+    git submodule update --init --recursive
 ```
 
 
@@ -50,27 +50,22 @@ cd /workspace/GlORIE-SLAM && \
 
 
 
-**额外依赖安装**：
+#### open3d编译安装
+
+只要网络挂了本地的代理，就不用太多问题
+
+**open3d相关依赖**：若已经处于root权限，需提前注释掉 **util/install_deps_ubuntu.sh** 中的 sudo
 
 ```bash
-pip install thirdparty/evaluate_3d_reconstruction_lib && \
-    python setup.py install
+cd thirdparty/Open3D/ && bash util/install_deps_ubuntu.sh
 ```
 
 
 
-#### 编译open3d
-
-补充依赖：
+**Python环境配置**：
 
 ```bash
-sudo apt-get install -y libosmesa6-dev
-```
-
-
-
-```bash
-cd /workspace/GlORIE-SLAM/thirdparty
+pip install pybind11 && mamba install cmake=3.22 -y
 ```
 
 
@@ -82,35 +77,59 @@ cd /workspace/GlORIE-SLAM/thirdparty/Open3D && \
 
 
 
-编译：
+**CMake 编译配置**：
 
 ```bash
 cmake .. \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_SHARED_LIBS=ON \
-  -DENABLE_HEADLESS_RENDERING=ON \
-  -DBUILD_GUI=OFF \
-  -DUSE_SYSTEM_GLEW=OFF \
-  -DUSE_SYSTEM_GLFW=OFF \
-  -DBUILD_WEBRTC=OFF \
-  -DBUILD_EXAMPLES=OFF \
-  -DBUILD_TESTS=OFF \
-  -DBUILD_PYTHON_MODULE=ON \
-  -DBUILD_CUDA_MODULE=OFF \
-  -DPYTHON_EXECUTABLE=$(which python)
-
-
-make -j$(nproc) pip-package
-cd lib/python_package/pip_package
-pip install open3d-*.whl
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_GUI=OFF \
+    -DBUILD_WEBRTC=OFF \
+    -DENABLE_HEADLESS_RENDERING=ON \
+    -DBUILD_FILAMENT_GOOGLE_TESTS=OFF \
+    -DUSE_SYSTEM_GLFW=OFF \
+    -DBUILD_PYTHON_MODULE=ON \
+    -DPython3_EXECUTABLE=$(which python)
 ```
 
 
 
-测试：
+**编译与安装**：
 
 ```bash
-python -c "import open3d as o3d; print(o3d.__version__)"
+make -j$(nproc)
+```
+
+
+
+编译 Python Wheel 包：
+
+```bash
+make install-pip-package
+```
+
+
+
+**测试**：
+
+```bash
+python -c "import open3d as o3d; print(f'Open3D Version: {o3d.__version__}')"
+```
+
+
+
+#### 额外依赖
+
+```bash
+cd /workspace/GlORIE-SLAM && \
+    pip install thirdparty/evaluate_3d_reconstruction_lib
+```
+
+
+
+**剩余依赖**：
+
+```bash
+python setup.py install
 ```
 
 
