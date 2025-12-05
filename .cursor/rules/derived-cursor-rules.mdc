@@ -153,3 +153,16 @@ When manually executing the commands from `.devcontainer/post_exec.sh`, ensure t
 5.  **Network Access:** Ensure you have network access to download the pre-trained model and other dependencies.
 
 6.  **Paths:** The script assumes a working directory of `/workspace`. Adjust paths accordingly if executing from a different location.
+
+### Docker Environment Variables
+
+When defining environment variables in a Dockerfile, especially for proxy settings (`http_proxy`, `https_proxy`), ensure they are defined using the `ENV` instruction rather than `export` within a `RUN` instruction. The `ENV` instruction persists variables across layers, whereas `export` only applies within the scope of a single `RUN` instruction. This ensures that subsequent commands, such as `apt-get update`, can access the proxy settings.
+
+Example:
+
+```dockerfile
+ENV http_proxy=http://your-proxy-server:port
+ENV https_proxy=https://your-proxy-server:port
+
+RUN apt-get update
+```
